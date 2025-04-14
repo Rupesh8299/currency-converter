@@ -1,6 +1,8 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Link } from "react-router-dom";
 
 const Header: React.FC = () => {
   return (
@@ -8,7 +10,9 @@ const Header: React.FC = () => {
       <div className="container mx-auto">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <h1 className="text-xl md:text-2xl font-bold">ConverTex</h1>
+            <Link to="/">
+              <h1 className="text-xl md:text-2xl font-bold">ConverTex</h1>
+            </Link>
           </div>
 
           <div className="hidden md:flex">
@@ -60,9 +64,11 @@ const Header: React.FC = () => {
             </div>
           </div>
           
-          <Button size="sm" variant="outline" className="border-white text-white hover:bg-white hover:text-converter-blue">
-            Sign In
-          </Button>
+          <Link to="/signin">
+            <Button size="sm" variant="outline" className="border-white text-white hover:bg-white hover:text-converter-blue">
+              Sign In
+            </Button>
+          </Link>
         </div>
       </div>
     </header>
