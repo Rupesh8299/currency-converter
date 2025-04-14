@@ -98,7 +98,7 @@ const Footer: React.FC = () => {
         <Separator className="my-6" />
         
         <div className="text-center text-sm text-gray-500">
-          <p>Copyright 2010-2025, ConverterX</p>
+          <p>Copyright 2010-2025, ConverTex</p>
           <p className="mt-2">This website uses cookies to ensure you get the best experience on our website</p>
         </div>
       </div>
@@ -107,3 +107,4 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
+
