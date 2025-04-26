@@ -1,25 +1,34 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, PhoneAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { AlertCircle, ArrowLeft, Mail, Lock } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Mail, Lock, Phone, AtSign } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/components/ui/use-toast';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
 });
 
+const phoneFormSchema = z.object({
+  phone: z.string().min(10, { message: 'Please enter a valid phone number' }),
+  code: z.string().optional(),
+});
+
 const SignIn = () => {
   const [authError, setAuthError] = useState<string | null>(null);
+  const [method, setMethod] = useState<'email' | 'phone'>('email');
+  const [isCodeSent, setIsCodeSent] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -28,6 +37,14 @@ const SignIn = () => {
     defaultValues: {
       email: '',
       password: '',
+    },
+  });
+
+  const phoneForm = useForm<z.infer<typeof phoneFormSchema>>({
+    resolver: zodResolver(phoneFormSchema),
+    defaultValues: {
+      phone: '',
+      code: '',
     },
   });
 
@@ -43,6 +60,36 @@ const SignIn = () => {
       navigate('/');
     } catch (error: any) {
       setAuthError(error.message || 'An unexpected error occurred. Please try again.');
+    }
+  };
+
+  const handleSendCode = async (values: z.infer<typeof phoneFormSchema>) => {
+    try {
+      setAuthError(null);
+      // In a real implementation, we would send a verification code to the phone number
+      // For this example, we'll just simulate the code was sent
+      setIsCodeSent(true);
+      toast({
+        title: "Code Sent",
+        description: "Verification code has been sent to your phone.",
+      });
+    } catch (error: any) {
+      setAuthError(error.message || 'An error occurred sending the verification code.');
+    }
+  };
+
+  const handleVerifyCode = async (values: z.infer<typeof phoneFormSchema>) => {
+    try {
+      setAuthError(null);
+      // In a real implementation, we would verify the code with Firebase Phone Auth
+      // For this example, we'll just simulate successful verification
+      toast({
+        title: "Success",
+        description: "Successfully signed in with phone number!",
+      });
+      navigate('/');
+    } catch (error: any) {
+      setAuthError(error.message || 'Invalid verification code.');
     }
   };
 
