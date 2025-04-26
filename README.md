@@ -33,17 +33,20 @@ ConverTex is a modern currency conversion application that provides real-time ex
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/Rupesh8299/chartwise-currency-flow.git
 cd chartwise-currency-flow
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Create a `.env` file in the root directory with your API keys:
+
 ```env
 VITE_FIREBASE_API_KEY=your_firebase_api_key
 VITE_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
@@ -56,6 +59,7 @@ VITE_CURRENCY_API_KEY=your_currency_api_key
 ```
 
 4. Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -99,4 +103,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 Rupesh - Rupesh8299@gmail.com
 
 Project Link: [https://github.com/Rupesh8299/chartwise-currency-flow](https://github.com/Rupesh8299/chartwise-currency-flow)
-
