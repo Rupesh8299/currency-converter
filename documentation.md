@@ -4,6 +4,28 @@
 
 ConverTex is a currency conversion application that provides real-time currency exchange rates with historical data tracking. The application uses Firebase for authentication and the FreeCurrencyAPI for exchange rate data, featuring a responsive design implemented with Tailwind CSS and shadcn/ui components.
 
+## Development Team
+
+### Project Leadership
+- **Team Lead**: Rupesh Kumar Singh
+  - Project architecture and technical decisions
+  - Code review management
+  - Deployment oversight
+  - Team coordination
+
+### Core Development Team
+- **Aman Gupta**
+  - Frontend development
+  - UI/UX implementation
+  - Component architecture
+  - Responsive design
+  
+- **Aquib Anwer**
+  - API integration
+  - Authentication system
+  - Testing implementation
+  - Performance optimization
+
 ## File Structure
 
 ```

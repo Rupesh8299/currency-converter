@@ -2,6 +2,23 @@
 
 ConverTex is a modern currency conversion application that provides real-time exchange rates, historical data tracking, and an intuitive user interface.
 
+## Development Team
+
+### Leadership
+- **Team Lead**: Rupesh Kumar Singh
+  - Project architecture
+  - Technical oversight
+  - Deployment management
+
+### Core Developers
+- **Aman Gupta**
+  - Frontend development
+  - UI/UX implementation
+  
+- **Aquib Anwer**
+  - API integration
+  - Authentication system
+
 ## Features
 
 - Real-time currency conversion

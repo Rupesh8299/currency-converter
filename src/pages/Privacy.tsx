@@ -17,6 +17,16 @@ const Privacy = () => {
         <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow">
           <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
 
+          <div className="mb-8 p-4 bg-gray-50 rounded-lg">
+            <p className="text-sm text-gray-600">
+              This privacy policy is maintained by the ConverTex development team:
+            </p>
+            <ul className="mt-2 text-sm text-gray-600">
+              <li><strong>Team Lead:</strong> Rupesh Kumar Singh</li>
+              <li><strong>Core Developers:</strong> Aman Gupta, Aquib Anwer</li>
+            </ul>
+          </div>
+
           <div className="space-y-6 text-gray-600">
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">
@@ -93,6 +103,7 @@ const Privacy = () => {
 
           <div className="mt-8 text-sm text-gray-500">
             <p>Last updated: April 27, 2025</p>
+            <p className="mt-1">For inquiries about this policy, contact Team Lead Rupesh Kumar Singh at Rupesh8299@gmail.com</p>
           </div>
         </div>
       </div>

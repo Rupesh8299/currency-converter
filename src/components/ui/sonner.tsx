@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react"
-import { Toaster as Sonner } from "sonner"
+import { useEffect, useState } from "react";
+import { Toaster as Sonner } from "sonner";
 
-type ToasterProps = React.ComponentProps<typeof Sonner>
+type ToasterProps = React.ComponentProps<typeof Sonner>;
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const [theme, setTheme] = useState<"light" | "dark">("light")
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches
-    setTheme(isDark ? "dark" : "light")
-  }, [])
+    const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setTheme(isDark ? "dark" : "light");
+  }, []);
 
   return (
     <Sonner
@@ -28,7 +28,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       {...props}
     />
-  )
-}
+  );
+};
 
-export { Toaster }
+export { Toaster };
