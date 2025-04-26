@@ -1,9 +1,10 @@
-
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { AlertCircle, ArrowLeft, Mail, Lock, User } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '@/components/ui/use-toast';
 
 const formSchema = z.object({
   fullName: z.string().min(2, { message: 'Name is required' }),
@@ -27,6 +29,8 @@ const formSchema = z.object({
 
 const SignUp = () => {
   const [signupError, setSignupError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,12 +46,21 @@ const SignUp = () => {
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setSignupError(null);
-      console.log('Sign up values:', values);
-      // Here would be the actual sign-up logic
-      // For now, we'll just simulate an error for demonstration
-      setSignupError('This email is already registered. Please use a different email or sign in.');
-    } catch (error) {
-      setSignupError('An unexpected error occurred. Please try again.');
+      const { email, password, fullName } = values;
+      
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, {
+        displayName: fullName
+      });
+      
+      toast({
+        title: "Success",
+        description: "Your account has been created successfully!",
+      });
+      
+      navigate('/');
+    } catch (error: any) {
+      setSignupError(error.message || 'An unexpected error occurred. Please try again.');
     }
   };
 

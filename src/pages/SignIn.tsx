@@ -1,32 +1,27 @@
-
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { AlertCircle, ArrowLeft, AtSign, Lock, Mail, Phone } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Mail, Lock } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useState } from 'react';
+import { useToast } from '@/components/ui/use-toast';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
 });
 
-const phoneFormSchema = z.object({
-  phone: z.string().min(10, { message: 'Please enter a valid phone number' }),
-  code: z.string().length(6, { message: 'Code must be 6 digits' }).optional(),
-});
-
 const SignIn = () => {
-  const [method, setMethod] = useState<'email' | 'phone'>('email');
-  const [isCodeSent, setIsCodeSent] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -36,45 +31,18 @@ const SignIn = () => {
     },
   });
 
-  const phoneForm = useForm<z.infer<typeof phoneFormSchema>>({
-    resolver: zodResolver(phoneFormSchema),
-    defaultValues: {
-      phone: '',
-      code: '',
-    },
-  });
-
   const handleEmailSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setAuthError(null);
-      console.log('Sign in with email:', values);
-      // Here would be the actual authentication logic
-      // For now, we'll just simulate an error for demonstration
-      setAuthError('Invalid email or password. Please try again.');
-    } catch (error) {
-      setAuthError('An unexpected error occurred. Please try again.');
-    }
-  };
-
-  const handleSendCode = async (values: z.infer<typeof phoneFormSchema>) => {
-    try {
-      setAuthError(null);
-      console.log('Sending code to:', values.phone);
-      // Here would be the logic to send a verification code
-      setIsCodeSent(true);
-    } catch (error) {
-      setAuthError('Failed to send verification code. Please try again.');
-    }
-  };
-
-  const handleVerifyCode = async (values: z.infer<typeof phoneFormSchema>) => {
-    try {
-      setAuthError(null);
-      console.log('Verifying code:', values);
-      // Here would be the logic to verify the code
-      setAuthError('Invalid verification code. Please try again.');
-    } catch (error) {
-      setAuthError('Failed to verify code. Please try again.');
+      const { email, password } = values;
+      await signInWithEmailAndPassword(auth, email, password);
+      toast({
+        title: "Success",
+        description: "Successfully signed in!",
+      });
+      navigate('/');
+    } catch (error: any) {
+      setAuthError(error.message || 'An unexpected error occurred. Please try again.');
     }
   };
 
