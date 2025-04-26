@@ -1,75 +1,102 @@
+# ConverTex - Currency Conversion Made Simple
 
-# Welcome to ConverTex
+ConverTex is a modern currency conversion application that provides real-time exchange rates, historical data tracking, and an intuitive user interface.
 
-## Project info
+## Features
 
-**URL**: https://lovable.dev/projects/1fa3e664-a4cd-4c01-a9a5-afbbd3777906
+- Real-time currency conversion
+- Historical exchange rate charts
+- Multiple timeframe analysis (1D to 5Y)
+- User authentication with email verification
+- Responsive design for all devices
+- Interactive charts and tables
+- 15+ major world currencies supported
 
-## How can I edit this code?
+## Technologies Used
 
-There are several ways of editing your application.
+- React 18 with TypeScript
+- Vite for build tooling
+- Tailwind CSS for styling
+- shadcn/ui for UI components
+- Firebase Authentication
+- FreeCurrencyAPI for exchange rates
+- Recharts for data visualization
 
-**Use Lovable**
+## Getting Started
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/1fa3e664-a4cd-4c01-a9a5-afbbd3777906) and start prompting.
+### Prerequisites
 
-Changes made via Lovable will be committed automatically to this repo.
+- Node.js 18+ - [Install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- npm 9+ (comes with Node.js)
+- Git
 
-**Use your preferred IDE**
+### Installation
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+1. Clone the repository:
+```bash
+git clone https://github.com/Rupesh8299/chartwise-currency-flow.git
+cd chartwise-currency-flow
+```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+2. Install dependencies:
+```bash
+npm install
+```
 
-Follow these steps:
+3. Create a `.env` file in the root directory with your API keys:
+```env
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+VITE_FIREBASE_PROJECT_ID=your_firebase_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
+VITE_FIREBASE_APP_ID=your_firebase_app_id
+VITE_FIREBASE_MEASUREMENT_ID=your_firebase_measurement_id
+VITE_CURRENCY_API_KEY=your_currency_api_key
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd ConverTex
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+4. Start the development server:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will be available at `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Building for Production
 
-**Use GitHub Codespaces**
+To create a production build:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```bash
+npm run build
+```
 
-## What technologies are used for this project?
+The build output will be in the `dist` directory.
 
-This project is built with:
+## Deployment
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+This project is deployed on Vercel. To deploy your own instance:
 
-## How can I deploy this project?
+1. Fork this repository
+2. Create a Vercel account
+3. Import your forked repository
+4. Configure environment variables in Vercel
+5. Deploy!
 
-Simply open [Lovable](https://lovable.dev/projects/1fa3e664-a4cd-4c01-a9a5-afbbd3777906) and click on Share -> Publish.
+## Contributing
 
-## Can I connect a custom domain to my Lovable project?
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-Yes, you can!
+## License
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## Contact
+
+Rupesh - Rupesh8299@gmail.com
+
+Project Link: [https://github.com/Rupesh8299/chartwise-currency-flow](https://github.com/Rupesh8299/chartwise-currency-flow)
 
