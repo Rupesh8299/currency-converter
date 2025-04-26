@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   LineChart,
@@ -8,14 +7,14 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  ReferenceDot,
+  ReferenceLine,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getHistoricalData, currencies } from "@/api/currencyService";
 import { toast } from "sonner";
 
-type TimeRange = "1M" | "3M" | "6M" | "1Y" | "5Y";
+type TimeRange = "1D" | "1M" | "3M" | "6M" | "1Y" | "5Y";
 
 interface CurrencyChartProps {
   fromCurrency: string;
@@ -31,6 +30,7 @@ const CurrencyChart: React.FC<CurrencyChartProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
 
   const timeRanges: { label: string; value: TimeRange }[] = [
+    { label: "1D", value: "1D" },
     { label: "1M", value: "1M" },
     { label: "3M", value: "3M" },
     { label: "6M", value: "6M" },
@@ -63,42 +63,48 @@ const CurrencyChart: React.FC<CurrencyChartProps> = ({
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    
-    if (timeRange === "5Y") {
-      return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short' });
-    } else if (timeRange === "1Y") {
-      return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-    } else {
-      return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+
+    if (timeRange === "1D") {
+      return date.toLocaleTimeString(undefined, {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
     }
+    if (timeRange === "5Y") {
+      return date.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+      });
+    }
+    if (timeRange === "1Y") {
+      return date.toLocaleDateString(undefined, {
+        month: "short",
+        year: "2-digit",
+      });
+    }
+    return date.toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+    });
   };
 
   const formatYAxis = (value: number) => {
-    if (value > 1000) {
-      return value.toFixed(0);
-    } else if (value > 10) {
-      return value.toFixed(1);
-    } else {
-      return value.toFixed(2);
+    if (value >= 1000) {
+      return value.toLocaleString(undefined, { maximumFractionDigits: 0 });
     }
+    if (value >= 10) {
+      return value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+    }
+    return value.toLocaleString(undefined, { maximumFractionDigits: 4 });
   };
 
-  const getLatestRate = () => {
-    if (chartData.length > 0) {
-      return chartData[chartData.length - 1].rate;
-    }
-    return 0;
-  };
-
-  const getFirstRate = () => {
-    if (chartData.length > 0) {
-      return chartData[0].rate;
-    }
-    return 0;
-  };
+  const getLatestRate = () =>
+    chartData.length > 0 ? chartData[chartData.length - 1].rate : 0;
+  const getFirstRate = () => (chartData.length > 0 ? chartData[0].rate : 0);
 
   const calculateChange = () => {
-    if (chartData.length < 2) return { value: 0, percentage: 0, positive: true };
+    if (chartData.length < 2)
+      return { value: 0, percentage: 0, positive: true };
 
     const firstRate = getFirstRate();
     const latestRate = getLatestRate();
@@ -112,32 +118,22 @@ const CurrencyChart: React.FC<CurrencyChartProps> = ({
     };
   };
 
-  const getFromCurrencySymbol = () => {
-    const currency = currencies.find((c) => c.code === fromCurrency);
-    return currency?.symbol || fromCurrency;
-  };
-
-  const getToCurrencySymbol = () => {
-    const currency = currencies.find((c) => c.code === toCurrency);
-    return currency?.symbol || toCurrency;
+  const getCurrencySymbol = (code: string) => {
+    const currency = currencies.find((c) => c.code === code);
+    return currency?.symbol || code;
   };
 
   const change = calculateChange();
   const latestRate = getLatestRate();
 
-  const getChartTitle = () => {
-    return `${fromCurrency}/${toCurrency} Exchange Rate`;
-  };
-
-  // Find domain for the chart
   const findYAxisDomain = () => {
     if (chartData.length === 0) return [0, 1];
-    
-    const rates = chartData.map(dataPoint => dataPoint.rate);
+
+    const rates = chartData.map((dataPoint) => dataPoint.rate);
     const min = Math.min(...rates);
     const max = Math.max(...rates);
     const padding = (max - min) * 0.1;
-    
+
     return [min - padding, max + padding];
   };
 
@@ -145,7 +141,9 @@ const CurrencyChart: React.FC<CurrencyChartProps> = ({
     <Card className="w-full max-w-4xl mx-auto shadow-lg">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle>{getChartTitle()}</CardTitle>
+          <CardTitle>
+            {fromCurrency}/{toCurrency} Exchange Rate
+          </CardTitle>
           <div className="flex items-center space-x-1">
             {timeRanges.map((range) => (
               <Button
@@ -153,7 +151,9 @@ const CurrencyChart: React.FC<CurrencyChartProps> = ({
                 variant={timeRange === range.value ? "default" : "outline"}
                 size="sm"
                 className={`text-xs ${
-                  timeRange === range.value ? "bg-converter-blue text-white" : ""
+                  timeRange === range.value
+                    ? "bg-converter-blue text-white"
+                    : ""
                 }`}
                 onClick={() => setTimeRange(range.value)}
               >
@@ -169,21 +169,25 @@ const CurrencyChart: React.FC<CurrencyChartProps> = ({
           <div className="flex justify-between items-center">
             <div>
               <p className="text-3xl font-bold">
-                {getToCurrencySymbol()}{" "}
+                {getCurrencySymbol(toCurrency)}{" "}
                 {latestRate.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 4,
                 })}
               </p>
               <p className="text-sm text-gray-500">
-                1 {fromCurrency} = {getToCurrencySymbol()}{" "}
+                1 {fromCurrency} = {getCurrencySymbol(toCurrency)}{" "}
                 {latestRate.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 4,
                 })}
               </p>
             </div>
-            <div className={`text-right ${change.positive ? "text-green-500" : "text-red-500"}`}>
+            <div
+              className={`text-right ${
+                change.positive ? "text-green-500" : "text-red-500"
+              }`}
+            >
               <p className="text-lg font-semibold flex items-center justify-end">
                 {change.positive ? "+" : "-"}{" "}
                 {change.value.toLocaleString(undefined, {
@@ -210,7 +214,11 @@ const CurrencyChart: React.FC<CurrencyChartProps> = ({
                 data={chartData}
                 margin={{ top: 10, right: 10, left: 0, bottom: 20 }}
               >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="#f0f0f0"
+                />
                 <XAxis
                   dataKey="date"
                   tickFormatter={formatDate}
@@ -224,18 +232,23 @@ const CurrencyChart: React.FC<CurrencyChartProps> = ({
                 />
                 <Tooltip
                   formatter={(value: number) => [
-                    `${getToCurrencySymbol()} ${value.toFixed(4)}`,
+                    `${getCurrencySymbol(toCurrency)} ${value.toFixed(4)}`,
                     `${fromCurrency}/${toCurrency}`,
                   ]}
-                  labelFormatter={(label) => formatDate(label)}
+                  labelFormatter={formatDate}
+                />
+                <ReferenceLine
+                  y={getFirstRate()}
+                  strokeDasharray="3 3"
+                  stroke="#666"
                 />
                 <Line
                   type="monotone"
                   dataKey="rate"
                   stroke="#8B5CF6"
                   strokeWidth={2}
-                  activeDot={{ r: 6 }}
                   dot={false}
+                  activeDot={{ r: 6 }}
                 />
               </LineChart>
             </ResponsiveContainer>

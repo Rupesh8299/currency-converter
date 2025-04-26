@@ -1,4 +1,3 @@
-
 import { toast } from "sonner";
 
 // Define interfaces for our API responses and data structures
@@ -41,25 +40,76 @@ export const currencies: CurrencyOption[] = [
   { code: "NZD", name: "New Zealand Dollar", symbol: "NZ$", flag: "🇳🇿" },
 ];
 
-// API key for ExchangeRate-API (free tier)
-const API_KEY = "2d4419dae8a2ebbdf42fb1fa687127d8";
-const BASE_URL = "http://api.exchangeratesapi.io/v1";
+// Use environment variables for API configuration
+const API_KEY = import.meta.env.VITE_CURRENCY_API_KEY;
+const BASE_URL = "https://api.freecurrencyapi.com/v1";
+
+// Helper function to format date to YYYY-MM-DD
+const formatDate = (date: Date): string => {
+  return date.toISOString().split('T')[0];
+};
+
+// Helper function to get date range based on timeRange
+const getDateRange = (timeRange: string): { startDate: string; endDate: string } => {
+  const endDate = new Date();
+  const startDate = new Date();
+
+  switch (timeRange) {
+    case "1D":
+      startDate.setDate(endDate.getDate() - 1);
+      break;
+    case "1M":
+      startDate.setMonth(endDate.getMonth() - 1);
+      break;
+    case "3M":
+      startDate.setMonth(endDate.getMonth() - 3);
+      break;
+    case "6M":
+      startDate.setMonth(endDate.getMonth() - 6);
+      break;
+    case "1Y":
+      startDate.setFullYear(endDate.getFullYear() - 1);
+      break;
+    case "5Y":
+      startDate.setFullYear(endDate.getFullYear() - 5);
+      break;
+    default:
+      startDate.setMonth(endDate.getMonth() - 1);
+  }
+
+  return {
+    startDate: formatDate(startDate),
+    endDate: formatDate(endDate)
+  };
+};
 
 // Function to get current exchange rates
 export const getExchangeRates = async (baseCurrency: string): Promise<ExchangeRateResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/latest?access_key=${API_KEY}&base=${baseCurrency}`);
+    const response = await fetch(
+      `${BASE_URL}/latest?apikey=${API_KEY}&base_currency=${baseCurrency}&currencies=${currencies.map(c => c.code).join(',')}`
+    );
     
     if (!response.ok) {
       throw new Error("Failed to fetch exchange rates");
     }
     
-    return await response.json();
+    const data = await response.json();
+    
+    if (!data.data || typeof data.data !== 'object') {
+      throw new Error("Invalid API response format");
+    }
+
+    return {
+      success: true,
+      timestamp: Date.now() / 1000,
+      base: baseCurrency,
+      date: new Date().toISOString().split('T')[0],
+      rates: data.data
+    };
   } catch (error) {
     console.error("Error fetching exchange rates:", error);
     toast.error("Failed to fetch current exchange rates");
-    
-    // Return mock data for development/demo purposes
     return getMockExchangeRates(baseCurrency);
   }
 };
@@ -89,16 +139,43 @@ export const convertCurrency = (
 export const getHistoricalData = async (
   baseCurrency: string,
   targetCurrency: string,
-  timeRange: "1M" | "3M" | "6M" | "1Y" | "5Y"
+  timeRange: "1D" | "1M" | "3M" | "6M" | "1Y" | "5Y"
 ): Promise<HistoricalDataPoint[]> => {
   try {
-    // This would normally be a real API call to fetch historical data
-    // For demo purposes, we'll return mock data
-    return getMockHistoricalData(baseCurrency, targetCurrency, timeRange);
+    const { startDate, endDate } = getDateRange(timeRange);
+    
+    const response = await fetch(
+      `${BASE_URL}/historical?apikey=${API_KEY}` +
+      `&base_currency=${baseCurrency}` +
+      `&currencies=${targetCurrency}` +
+      `&date_from=${startDate}` +
+      `&date_to=${endDate}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch historical data");
+    }
+
+    const data = await response.json();
+
+    if (!data.data || typeof data.data !== 'object') {
+      throw new Error("Invalid historical data format");
+    }
+
+    // Transform API response into our format
+    const historicalData: HistoricalDataPoint[] = Object.entries(data.data)
+      .map(([date, rates]: [string, any]) => ({
+        date,
+        rate: rates[targetCurrency]
+      }))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    return historicalData;
   } catch (error) {
     console.error("Error fetching historical data:", error);
     toast.error("Failed to fetch historical exchange rate data");
-    return [];
+    // Fallback to mock data if API fails
+    return getMockHistoricalData(baseCurrency, targetCurrency, timeRange);
   }
 };
 
@@ -169,6 +246,7 @@ const getMockHistoricalData = (
     case "1Y":
       days = 365;
       interval = 7;
+      break;
       break;
     case "5Y":
       days = 365 * 5;
