@@ -2,9 +2,26 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { useAuth } from "@/hooks/useAuth";
+import { UserRound, LogOut } from "lucide-react";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const Header: React.FC = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      navigate('/signin');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   return (
     <header className="bg-converter-blue text-white py-3 px-4 md:px-6">
       <div className="container mx-auto">
@@ -64,11 +81,34 @@ const Header: React.FC = () => {
             </div>
           </div>
           
-          <Link to="/signin">
-            <Button size="sm" variant="outline" className="border-white text-white hover:bg-white hover:text-converter-blue">
-              Sign In
-            </Button>
-          </Link>
+          {user ? (
+            <HoverCard>
+              <HoverCardTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <UserRound className="h-5 w-5 text-white" />
+                </Button>
+              </HoverCardTrigger>
+              <HoverCardContent className="w-48">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">{user.email}</p>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 px-2"
+                    onClick={handleSignOut}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign out
+                  </Button>
+                </div>
+              </HoverCardContent>
+            </HoverCard>
+          ) : (
+            <Link to="/signin">
+              <Button size="sm" variant="outline" className="border-white text-white hover:bg-white hover:text-converter-blue">
+                Sign In
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </header>
